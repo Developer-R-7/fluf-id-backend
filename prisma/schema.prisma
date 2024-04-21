@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id            String   @id @default(cuid())
+  walletAddress String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User?    @relation("User Profile")
+}
+
+model App {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  users       UserApp[]
+}
+
+model User {
+  id              String             @id @default(cuid())
+  name            String
+  challengeString String
+  accountId       String             @unique
+  status          UserRegisterStatus @default(pending)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  contractAddress String?
+  account         Account            @relation("User Profile", fields: [accountId], references: [id])
+  passkey         UserPasskey?       @relation("User Passkey")
+  apps            UserApp[]
+}
+
+model UserPasskey {
+  id           String   @id @default(cuid())
+  credentialID String
+  publicKey    String
+  userId       String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation("User Passkey", fields: [userId], references: [id])
+}
+
+model UserApp {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  appId     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  app       App      @relation(fields: [appId], references: [id])
+}
+
+enum UserRegisterStatus {
+  pending
+  registered
+}
