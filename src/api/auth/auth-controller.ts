@@ -1,53 +1,53 @@
 import { Response, NextFunction, Request } from "express";
 import {
-  handleRegister,
-  handleRegisterResponse,
-  handleLogin,
-  handleLoginResponse,
+  handleLoginUser,
+  handleCreateUser,
+  handleGenerateNonce,
 } from "./auth-service";
 import httpStatus from "http-status";
+import ApiError from "../../config/apiError";
 import catchAsync from "../../utils/catchAsync";
 
-export const register = catchAsync(
+export const createUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { walletAddress } = req.body;
+    const { body } = req;
 
-    if (!walletAddress) {
-      return res
-        .status(httpStatus.BAD_REQUEST)
-        .send("Wallet address is required");
+    if (body.captchaToken) {
+      delete body.captchaToken;
     }
 
-    const options = await handleRegister(walletAddress);
-    res.status(httpStatus.CREATED).send(options);
+    await handleCreateUser(body);
+    // send welcome email
+
+    res.status(httpStatus.CREATED).json({
+      success: true,
+      message: "User created successfully",
+    });
   }
 );
 
-export const registerResponse = catchAsync(
+export const loginUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const options = await handleRegisterResponse(req.body);
-    res.status(httpStatus.CREATED).send(options);
-  }
-);
+    const signature = req.headers["x-wallet-signature"] as string;
 
-export const login = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { walletAddress } = req.body;
-
-    if (!walletAddress) {
-      return res
-        .status(httpStatus.BAD_REQUEST)
-        .send("Wallet address is required");
+    if (!signature) {
+      throw new ApiError("Signature is required", httpStatus.BAD_REQUEST);
     }
 
-    const options = await handleLogin(walletAddress);
-    res.status(httpStatus.CREATED).send(options);
+    const token = await handleLoginUser(req.body.walletAddress, signature);
+
+    res.status(httpStatus.OK).json({
+      ...token,
+    });
   }
 );
 
-export const loginResponse = catchAsync(
+export const generateNonce = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const options = await handleLoginResponse(req.body);
-    res.status(httpStatus.CREATED).send(options);
+    const nonce = await handleGenerateNonce(req.params.walletAddress as string);
+
+    res.status(httpStatus.OK).json({
+      ...nonce,
+    });
   }
 );

@@ -9,14 +9,14 @@ datasource db {
 
 model Account {
   id            String   @id @default(cuid())
-  walletAddress String
+  walletAddress String   @unique
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   user          User?    @relation("User Profile")
 }
 
 model App {
-  id          Int       @id @default(autoincrement())
+  id          String    @id @default(cuid())
   name        String
   description String
   createdAt   DateTime  @default(now())
@@ -27,38 +27,23 @@ model App {
 model User {
   id              String             @id @default(cuid())
   name            String
-  challengeString String
+  avatarUrl       String?
+  nonce           String?
+  contractAddress String?            @unique
   accountId       String             @unique
-  status          UserRegisterStatus @default(pending)
   createdAt       DateTime           @default(now())
   updatedAt       DateTime           @updatedAt
-  contractAddress String?
   account         Account            @relation("User Profile", fields: [accountId], references: [id])
-  passkey         UserPasskey?       @relation("User Passkey")
   apps            UserApp[]
 }
 
-model UserPasskey {
-  id           String   @id @default(cuid())
-  credentialID String
-  publicKey    String
-  userId       String   @unique
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  user         User     @relation("User Passkey", fields: [userId], references: [id])
-}
 
 model UserApp {
   id        Int      @id @default(autoincrement())
   userId    String
-  appId     Int
+  appId     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id])
   app       App      @relation(fields: [appId], references: [id])
-}
-
-enum UserRegisterStatus {
-  pending
-  registered
 }

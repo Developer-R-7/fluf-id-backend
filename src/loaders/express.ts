@@ -1,8 +1,9 @@
+import { apiPrefix } from "./constants";
+import { errorHandler, errorConverter } from "../shared/middleware";
 import bodyParser from "body-parser";
 import cors from "cors";
 import express from "express";
 import routes from "../api";
-import { apiPrefix } from "./constants";
 
 const corsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE"],
@@ -15,7 +16,7 @@ const corsOptions = {
 };
 
 export default ({ app }: { app: express.Application }): void => {
-  app.get("/healthcheck", (req, res) => {
+  app.get("/health", (req, res) => {
     const healthcheck = {
       application: "passkey-server",
       uptime: process.uptime(),
@@ -42,4 +43,7 @@ export default ({ app }: { app: express.Application }): void => {
       message: "Resource not found",
     });
   });
+
+  app.use(errorConverter);
+  app.use(errorHandler);
 };

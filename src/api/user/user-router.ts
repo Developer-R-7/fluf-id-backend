@@ -1,8 +1,9 @@
+import { addContractAddress, appRegister } from "./user-controller";
 import express from "express";
-import { addContractAddress } from "./user-controller";
 
 const app = express.Router();
 
-app.put("/add-contract-address", addContractAddress);
+app.put("/update-user-contract", addContractAddress);
+app.post("/app-register", appRegister);
 
 export default app;
