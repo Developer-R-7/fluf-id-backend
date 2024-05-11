@@ -17,7 +17,6 @@ export const createUser = catchAsync(
     }
 
     await handleCreateUser(body);
-    // send welcome email
 
     res.status(httpStatus.CREATED).json({
       success: true,

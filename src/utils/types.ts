@@ -7,13 +7,11 @@ export type RouteType = {
 
 export type RequestPart = "body" | "query" | "params";
 
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  walletAddress: string;
-}
-
 export interface jwtReq extends Request {
-  user: User;
+  user: {
+    id: string;
+    name: string;
+    lastLogin: Date;
+    walletAddress: string;
+  };
 }

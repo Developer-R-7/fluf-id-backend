@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import express from "express";
 import routes from "../api";
+import morgan from "morgan";
 
 const corsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE"],
@@ -16,6 +17,8 @@ const corsOptions = {
 };
 
 export default ({ app }: { app: express.Application }): void => {
+  app.use(morgan("dev"));
+
   app.get("/health", (req, res) => {
     const healthcheck = {
       application: "passkey-server",

@@ -16,32 +16,33 @@ model Account {
 }
 
 model App {
-  id          String    @id @default(cuid())
+  id          Int       @id
   name        String
   description String
+  apiKey      String
+  logoUrl     String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   users       UserApp[]
 }
 
 model User {
-  id              String             @id @default(cuid())
+  id              String    @id @default(cuid())
   name            String
   avatarUrl       String?
   nonce           String?
-  contractAddress String?            @unique
-  accountId       String             @unique
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
-  account         Account            @relation("User Profile", fields: [accountId], references: [id])
+  contractAddress String?   @unique
+  accountId       String    @unique
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  account         Account   @relation("User Profile", fields: [accountId], references: [id])
   apps            UserApp[]
 }
-
 
 model UserApp {
   id        Int      @id @default(autoincrement())
   userId    String
-  appId     String
+  appId     Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id])

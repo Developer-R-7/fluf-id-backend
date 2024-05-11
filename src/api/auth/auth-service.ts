@@ -79,7 +79,8 @@ export const handleLoginUser = async (
 
   const token = jwt.sign(
     {
-      ...account.user,
+      id: account.user.id,
+      name: account.user.name,
       lastLogin: new Date(),
       walletAddress: account.walletAddress,
     },

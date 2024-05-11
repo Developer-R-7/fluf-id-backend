@@ -1,5 +1,6 @@
 import { prismaClient } from "../../config";
 import ApiError from "../../config/apiError";
+import httpStatus from "http-status";
 
 export const handleAddContractAddress = async (
   walletAddress: string,
@@ -11,10 +12,21 @@ export const handleAddContractAddress = async (
         walletAddress: walletAddress,
       },
     },
+    select: {
+      id: true,
+      contractAddress: true,
+    },
   });
 
   if (!user) {
-    throw new ApiError("User not found", 404);
+    throw new ApiError("User not found", httpStatus.NOT_FOUND);
+  }
+
+  if (user.contractAddress) {
+    throw new ApiError(
+      "Contract address already added",
+      httpStatus.BAD_REQUEST
+    );
   }
 
   await prismaClient.user.update({
@@ -29,20 +41,15 @@ export const handleAddContractAddress = async (
   return { success: true, message: "Contract address added" };
 };
 
-export const handleAppRegister = async (
-  appId: string,
-  walletAddress: string
-) => {
-  const user = await prismaClient.user.findFirst({
+export const handleUserAppRegister = async (appId: number, userId: string) => {
+  const user = await prismaClient.user.findUnique({
     where: {
-      account: {
-        walletAddress: walletAddress,
-      },
+      id: userId,
     },
   });
 
   if (!user) {
-    throw new ApiError("User not found", 404);
+    throw new ApiError("User not found", httpStatus.NOT_FOUND);
   }
 
   const getApp = await prismaClient.app.findUnique({
@@ -52,7 +59,7 @@ export const handleAppRegister = async (
   });
 
   if (!getApp) {
-    throw new ApiError("App not found", 404);
+    throw new ApiError("Requested app not found", httpStatus.NOT_FOUND);
   }
 
   await prismaClient.userApp.create({
@@ -62,5 +69,5 @@ export const handleAppRegister = async (
     },
   });
 
-  return { success: true, message: "User registered" };
+  return { success: true, message: "User successfully registered to the app" };
 };

@@ -1,3 +1,5 @@
+import { randomBytes } from "crypto";
+
 export function stringToUInt8Array(str: string): Uint8Array {
   const encoder = new TextEncoder();
   return encoder.encode(str);
@@ -21,4 +23,10 @@ export function base64URLDecode(base64UrlString: string): Buffer {
     base64UrlString.replace(/-/g, "+").replace(/_/g, "/"),
     "base64"
   );
+}
+
+export function generateAppId(): number {
+  const randomBytesBuffer = randomBytes(2);
+  const randomValue = randomBytesBuffer.readUInt16BE(0);
+  return (randomValue % 9000) + 1000;
 }
