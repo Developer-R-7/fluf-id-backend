@@ -51,6 +51,7 @@ export const handleLoginUser = async (
       walletAddress: walletAddress,
     },
     select: {
+      walletAddress: true,
       user: {
         select: {
           id: true,
@@ -77,7 +78,11 @@ export const handleLoginUser = async (
   }
 
   const token = jwt.sign(
-    { ...account.user, lastLogin: new Date() },
+    {
+      ...account.user,
+      lastLogin: new Date(),
+      walletAddress: account.walletAddress,
+    },
     env.JWT_SECRET,
     {
       expiresIn: "30d",
