@@ -71,3 +71,36 @@ export const handleUserAppRegister = async (appId: number, userId: string) => {
 
   return { success: true, message: "User successfully registered to the app" };
 };
+
+export const handleGetUserApp = async (userId: string) => {
+  const user = await prismaClient.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+
+  if (!user) {
+    throw new ApiError("User not found", httpStatus.NOT_FOUND);
+  }
+
+  const getApps = await prismaClient.userApp.findMany({
+    where: {
+      userId: user.id,
+    },
+    select: {
+      app: {
+        select: {
+          id: true,
+          name: true,
+          description: true,
+        },
+      },
+    },
+  });
+
+  return {
+    success: true,
+    message: "Successfully fetched apps for user",
+    apps: getApps || [],
+  };
+};

@@ -1,4 +1,8 @@
-import { addContractAddress, userAppRegister } from "./user-controller";
+import {
+  addContractAddress,
+  userAppRegister,
+  getUserApp,
+} from "./user-controller";
 import { auth, validate } from "../../shared/middleware";
 import {
   userRegisterAppSchema,
@@ -21,5 +25,7 @@ app.post(
   validate("body", userRegisterAppSchema),
   userAppRegister
 );
+
+app.get("/apps", auth, getUserApp);
 
 export default app;

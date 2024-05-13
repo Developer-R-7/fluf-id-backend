@@ -5,6 +5,6 @@ import express from "express";
 
 const app = express.Router();
 
-app.post("/register", auth, validate("body", registerAppSchema), appRegister);
+app.post("/register", validate("body", registerAppSchema), appRegister);
 
 export default app;

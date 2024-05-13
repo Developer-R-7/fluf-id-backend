@@ -93,10 +93,8 @@ export const handleLoginUser = async (
   return {
     success: true,
     message: "User logged in successfully",
-    data: {
-      token,
-      userId: account.user.id,
-    },
+    token,
+    userId: account.user.id,
   };
 };
 
@@ -130,8 +128,6 @@ export const handleGenerateNonce = async (walletAddress: string) => {
   return {
     success: true,
     message: "Nonce generated successfully",
-    data: {
-      nonce,
-    },
+    nonce: nonce,
   };
 };
